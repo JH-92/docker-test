@@ -1,10 +1,11 @@
-FROM gradle:7.1.1-jdk8 AS build
-WORKDIR /app
-COPY . /app
+FROM gradle:8.2.1-jdk8 AS builder
+WORKDIR /build
+COPY . /build
 RUN gradle build
 
 FROM openjdk:8-jdk-alpine
-ARG JAR_FILE=build/libs/*.jar
-COPY ${JAR_FILE} app.jar
+WORKDIR /app
+RUN ls
+COPY --from=builder /build/build/libs/*.jar ./app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
